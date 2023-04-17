@@ -6,12 +6,15 @@ import com.AlonSimhi.CouponProject.Repositories.CustomersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ClientServices {
-    @Autowired
     protected CustomersRepository customersRepo;
-    @Autowired
     protected CompaniesRepository companiesRepo;
-    @Autowired
     protected CouponsRepository couponsRepo;
+
+    public ClientServices(CustomersRepository customersRepo, CompaniesRepository companiesRepo, CouponsRepository couponsRepo) {
+        this.customersRepo = customersRepo;
+        this.companiesRepo = companiesRepo;
+        this.couponsRepo = couponsRepo;
+    }
 
     public abstract boolean login(String email, String password);
 }

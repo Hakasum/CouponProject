@@ -10,7 +10,6 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "company_id")
     private Company company;
     private int amount;
     @Enumerated(EnumType.STRING)
@@ -22,7 +21,7 @@ public class Coupon {
     public Coupon() {
     }
 
-    public Coupon(Company company, int amount, Category category, String title, String description, String image, Date startDate, Date endDate, double price) {
+    public Coupon(Company company, Category category, String title, String description, Date startDate, Date endDate, int amount, double price, String image) {
         this.company = company;
         this.amount = amount;
         this.category = category;
@@ -117,5 +116,21 @@ public class Coupon {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Coupon{" +
+                "id=" + id +
+                ", company=" + company +
+                ", amount=" + amount +
+                ", category=" + category +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", image='" + image + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", price=" + price +
+                '}';
     }
 }

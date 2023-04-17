@@ -7,6 +7,9 @@ import com.AlonSimhi.CouponProject.Exceptions.ClientLoginException;
 import com.AlonSimhi.CouponProject.Exceptions.CompanyException;
 import com.AlonSimhi.CouponProject.Exceptions.CouponException;
 import com.AlonSimhi.CouponProject.Exceptions.NoSuchIdException;
+import com.AlonSimhi.CouponProject.Repositories.CompaniesRepository;
+import com.AlonSimhi.CouponProject.Repositories.CouponsRepository;
+import com.AlonSimhi.CouponProject.Repositories.CustomersRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,15 +21,17 @@ import java.util.stream.Collectors;
 public class CompanyService extends ClientServices {
     private int companyID;
 
-    public CompanyService(String email, String password) throws ClientLoginException {
-        if (!login(email, password)){
-            throw new ClientLoginException();
-        }
-        this.companyID = companiesRepo.findByEmail(email).getId();
+    public CompanyService(CustomersRepository customersRepo, CompaniesRepository companiesRepo, CouponsRepository couponsRepo) {
+        super(customersRepo, companiesRepo, couponsRepo);
     }
+
     @Override
     public boolean login(String email, String password) {
-        if(companiesRepo.existsByEmailAndPassword(email, password)) return true;
+        Company company = companiesRepo.findByEmailAndPassword(email, password);
+        if(company!=null) {
+            this.companyID = company.getId();
+            return true;
+        }
         return false;
     }
     public void addCoupon(Coupon coupon) throws CouponException, NoSuchIdException {
@@ -38,13 +43,13 @@ public class CompanyService extends ClientServices {
     public void updateCoupon(Coupon coupon) throws NoSuchIdException, CouponException {
         if(couponsRepo.findById(coupon.getId()).orElseThrow(NoSuchIdException::new).getCompany().getId()==coupon.getCompany().getId()){
             couponsRepo.save(coupon);
-        } throw new CouponException("Cannot Change the companyID of a coupon");
+        } else throw new CouponException("Cannot Change the companyID of a coupon");
     }
     public void deleteCoupon(int couponID){
         couponsRepo.deleteById(couponID);
     }
     public List<Coupon> getCompanyCoupons() throws NoSuchIdException, CouponException {
-        ArrayList<Coupon> companyCoupons = companiesRepo.findById(companyID).orElseThrow(NoSuchIdException::new).getCoupons();
+        List<Coupon> companyCoupons = companiesRepo.findById(companyID).orElseThrow(NoSuchIdException::new).getCoupons();
         if (companyCoupons==null) throw new CouponException("This company does not have any coupons yet");
         return companyCoupons;
     }

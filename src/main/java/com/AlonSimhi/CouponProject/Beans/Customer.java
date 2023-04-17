@@ -2,6 +2,7 @@ package com.AlonSimhi.CouponProject.Beans;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "customers")
@@ -10,11 +11,11 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String firstName, lastName, email, password;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.REMOVE)
     @JoinTable(name = "customers_vs_coupons",
             joinColumns = @JoinColumn(name = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "coupon_id"))
-    private ArrayList<Coupon> Coupons;
+    private List<Coupon> Coupons;
 
     public Customer() {
     }
@@ -72,11 +73,22 @@ public class Customer {
         this.password = password;
     }
 
-    public ArrayList<Coupon> getCoupons() {
+    public List<Coupon> getCoupons() {
         return Coupons;
     }
 
     public void setCoupons(ArrayList<Coupon> coupons) {
         Coupons = coupons;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

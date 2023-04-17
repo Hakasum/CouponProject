@@ -1,6 +1,7 @@
 package com.AlonSimhi.CouponProject.Threads;
 
 import com.AlonSimhi.CouponProject.Repositories.CouponsRepository;
+import com.AlonSimhi.CouponProject.Services.CompanyService;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -11,14 +12,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 @Service
 public class CouponsExpirationDailyJob {
-//    private static CouponsExpirationDailyJob instance = null;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private CouponsRepository repo;
 
     /**
      * Initializes a scheduled thread pool that runs a task to delete expired coupons once a day.
      */
-    private CouponsExpirationDailyJob() {
+    private CouponsExpirationDailyJob(CouponsRepository couponsRepository) {
+        this.repo = couponsRepository;
+        repo.deleteByEndDateBefore(new Date(System.currentTimeMillis()));
         scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -27,24 +29,6 @@ public class CouponsExpirationDailyJob {
             }
         }, getDelayToNextMidnight(), 24 * 60 * 60, TimeUnit.SECONDS);
     }
-
-    /**
-     * Returns the instance of CouponsExpirationDailyJob class.
-     * Implements a double-checked locking singleton pattern.
-     *
-     * @return the instance of CouponsExpirationDailyJob class
-     */
-//    public static CouponsExpirationDailyJob getInstance() {
-//        if (instance == null) {
-//            synchronized (CouponsExpirationDailyJob.class) {
-//                if (instance == null) {
-//                    instance = new CouponsExpirationDailyJob();
-//                }
-//            }
-//        }
-//        return instance;
-//    }
-
     /**
      * @return the delay (in seconds) to the next midnight
      */
@@ -52,3 +36,5 @@ public class CouponsExpirationDailyJob {
         return LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS);
     }
 }
+
+/** Needs to add a stop.*/

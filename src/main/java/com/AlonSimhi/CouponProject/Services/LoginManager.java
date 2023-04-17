@@ -1,22 +1,17 @@
 package com.AlonSimhi.CouponProject.Services;
 
 import com.AlonSimhi.CouponProject.Exceptions.ClientLoginException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 @Service
 public class LoginManager {
-//    private static LoginManager instance;
+    private ApplicationContext ctx;
 
-    private LoginManager() {
+    public LoginManager(ApplicationContext ctx) {
+        this.ctx = ctx;
     }
-
-//    public static LoginManager getInstance() {
-//        if (instance == null) {
-//            instance = new LoginManager();
-//        }
-//        return instance;
-//    }
 
     /**
      * A method that checks the credentials provided against the database of the provided type and logs in if the credentials match.
@@ -31,15 +26,22 @@ public class LoginManager {
     public ClientServices login(String email, String password, ClientType clientType) throws ClientLoginException {
         switch (clientType) {
             case Administrator: {
-                return new AdminService(email, password);
+                AdminService adminService = ctx.getBean(AdminService.class);
+                if (adminService.login(email, password))
+                    return adminService;
+                break;
             }
             case Company: {
-                return new CompanyService(email, password);
+                CompanyService companyService = ctx.getBean(CompanyService.class);
+                if(companyService.login(email, password)) return companyService;
+                break;
             }
             case Customer: {
-                return new CustomerService(email, password);
+                CustomerService customerService = ctx.getBean(CustomerService.class);
+                if(customerService.login(email, password)) return customerService;
+                break;
             }
-            default: return null;
         }
+        return null;
     }
 }

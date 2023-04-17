@@ -7,6 +7,9 @@ import com.AlonSimhi.CouponProject.Exceptions.ClientLoginException;
 import com.AlonSimhi.CouponProject.Exceptions.CouponException;
 import com.AlonSimhi.CouponProject.Exceptions.CustomerException;
 import com.AlonSimhi.CouponProject.Exceptions.NoSuchIdException;
+import com.AlonSimhi.CouponProject.Repositories.CompaniesRepository;
+import com.AlonSimhi.CouponProject.Repositories.CouponsRepository;
+import com.AlonSimhi.CouponProject.Repositories.CustomersRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -19,18 +22,22 @@ import java.util.stream.Collectors;
 public class CustomerService extends ClientServices{
     private Customer customer;
 
-    public CustomerService(String email, String password) throws ClientLoginException {
-        if(!login(email, password)) throw new ClientLoginException();
-        this.customer = customersRepo.findByEmail(email);
+    public CustomerService(CustomersRepository customersRepo, CompaniesRepository companiesRepo, CouponsRepository couponsRepo) {
+        super(customersRepo, companiesRepo, couponsRepo);
     }
+
     @Override
     public boolean login(String email, String password) {
-        return customersRepo.existsByEmailAndPassword(email, password);
+        customer = customersRepo.findByEmailAndPassword(email, password);
+        if (customer!=null)return true;
+        return false;
     }
     public void purchaseCoupon(Coupon coupon) throws NoSuchIdException, CustomerException, CouponException {
         if (getCustomerCoupons().stream().anyMatch(c->c.getId()==coupon.getId())) throw new CustomerException("Cannot purchase a coupon more than once");
         if (coupon.getAmount()==0) throw new CouponException("This coupon is out of stock");
-        if (coupon.getEndDate().after(new Date(System.currentTimeMillis()))) throw new CouponException("Coupon expired");
+        if (coupon.getEndDate().before(new Date(System.currentTimeMillis()))) throw new CouponException("Coupon expired");
+        coupon.setAmount(coupon.getAmount()-1);
+        couponsRepo.save(coupon);
         customer.getCoupons().add(coupon);
         customersRepo.save(customer);
     }
