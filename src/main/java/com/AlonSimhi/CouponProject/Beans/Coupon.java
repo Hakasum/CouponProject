@@ -33,19 +33,6 @@ public class Coupon {
         this.price = price;
     }
 
-    public Coupon(int id, Company company, int amount, Category category, String title, String description, String image, Date startDate, Date endDate, double price) {
-        this.id = id;
-        this.company = company;
-        this.amount = amount;
-        this.category = category;
-        this.title = title;
-        this.description = description;
-        this.image = image;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.price = price;
-    }
-
     public int getId() {
         return id;
     }
@@ -122,7 +109,7 @@ public class Coupon {
     public String toString() {
         return "Coupon{" +
                 "id=" + id +
-                ", company=" + company +
+                ", company=" + company.getName() +
                 ", amount=" + amount +
                 ", category=" + category +
                 ", title='" + title + '\'' +

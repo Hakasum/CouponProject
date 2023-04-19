@@ -24,14 +24,6 @@ public class Company {
         this.coupons = coupons;
     }
 
-    public Company(int id, String name, String email, String password, ArrayList<Coupon> coupons) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.coupons = coupons;
-    }
-
     public int getId() {
         return id;
     }

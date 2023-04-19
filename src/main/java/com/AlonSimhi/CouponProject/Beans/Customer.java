@@ -11,25 +11,13 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String firstName, lastName, email, password;
-    @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.REMOVE)
-    @JoinTable(name = "customers_vs_coupons",
-            joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "coupon_id"))
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Coupon> Coupons;
 
     public Customer() {
     }
 
     public Customer(String firstName, String lastName, String email, String password, ArrayList<Coupon> coupons) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        Coupons = coupons;
-    }
-
-    public Customer(int id, String firstName, String lastName, String email, String password, ArrayList<Coupon> coupons) {
-        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -77,7 +65,7 @@ public class Customer {
         return Coupons;
     }
 
-    public void setCoupons(ArrayList<Coupon> coupons) {
+    public void setCoupons(List<Coupon> coupons) {
         Coupons = coupons;
     }
 
